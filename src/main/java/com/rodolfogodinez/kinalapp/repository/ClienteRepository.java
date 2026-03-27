@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ClienteRepository extends JpaRepository<Cliente,String> {
 
-    List<Cliente> findByEstado(int estado);
+    List<Cliente> findByEstado(Integer estado);
+
 
 }
