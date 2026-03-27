@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
-    // Buscar cosas por  estado
+    // Buscar cosas por estado
     List<Producto> findByEstado(int estado);
 
     // Por nobre
