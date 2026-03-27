@@ -15,19 +15,19 @@ public interface IProductoService {
     // Buscar producto por su código
     Optional<Producto> buscarPorCodigo(Integer codigo);
 
-    // Guardar un nuevo producto
+
     Producto guardar(Producto producto);
 
-    // Actualizar un producto existente
+
     Producto actualizar(Integer codigo, Producto producto);
 
-    // Eliminar un producto
+
     void eliminar(Integer codigo);
 
-    // Verificar si existe un producto
+
     boolean existePorCodigo(Integer codigo);
 
-    // Buscar productos por nombre
+
     List<Producto> buscarPorNombre(String nombre);
 
     // Actualizar stock después de una venta
