@@ -6,30 +6,21 @@ import java.util.Optional;
 
 public interface IProductoService {
 
-    // Listar todos los productos
     List<Producto> listarTodos();
 
-    // Listar productos activos
     List<Producto> listarActivos();
 
-    // Buscar producto por su código
-    Optional<Producto> buscarPorCodigo(Integer codigo);
-
+    Optional<Producto> buscarPorCodigo(Long codigo);
 
     Producto guardar(Producto producto);
 
+    Producto actualizar(Long codigo, Producto producto);
 
-    Producto actualizar(Integer codigo, Producto producto);
+    void eliminar(Long codigo);
 
-
-    void eliminar(Integer codigo);
-
-
-    boolean existePorCodigo(Integer codigo);
-
+    boolean existePorCodigo(Long codigo);
 
     List<Producto> buscarPorNombre(String nombre);
 
-    // Actualizar stock después de una venta
-    Producto actualizarStock(Integer codigo, Integer cantidadVendida);
+    Producto actualizarStock(Long codigo, Integer cantidadVendida);
 }
