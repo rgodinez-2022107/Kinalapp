@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface VentasRepository extends JpaRepository<Ventas, Integer> {
-
+public interface VentasRepository extends JpaRepository<Ventas, Long> {
 
     List<Ventas> findByCliente(Cliente cliente);
 
