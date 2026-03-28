@@ -5,7 +5,6 @@ import com.rodolfogodinez.kinalapp.service.IDetalleVentaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -24,16 +23,15 @@ public class DetalleVentaController {
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<DetalleVenta> buscarPorCodigo(@PathVariable Integer codigo) {
+    public ResponseEntity<DetalleVenta> buscarPorCodigo(@PathVariable Long codigo) {
         return detalleVentaService.buscarPorCodigo(codigo)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/venta/{codigoVenta}")
-    public ResponseEntity<List<DetalleVenta>> buscarPorVenta(@PathVariable Integer codigoVenta) {
-        List<DetalleVenta> detalles = detalleVentaService.buscarPorVenta(codigoVenta);
-        return ResponseEntity.ok(detalles);
+    public ResponseEntity<List<DetalleVenta>> buscarPorVenta(@PathVariable Long codigoVenta) {
+        return ResponseEntity.ok(detalleVentaService.buscarPorVentaId(codigoVenta));
     }
 
     @PostMapping
@@ -49,7 +47,7 @@ public class DetalleVentaController {
     }
 
     @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer codigo, @RequestBody DetalleVenta detalle) {
+    public ResponseEntity<?> actualizar(@PathVariable Long codigo, @RequestBody DetalleVenta detalle) {
         try {
             if (!detalleVentaService.existePorCodigo(codigo)) {
                 return ResponseEntity.notFound().build();
@@ -64,7 +62,7 @@ public class DetalleVentaController {
     }
 
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer codigo) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long codigo) {
         try {
             if (!detalleVentaService.existePorCodigo(codigo)) {
                 return ResponseEntity.notFound().build();
