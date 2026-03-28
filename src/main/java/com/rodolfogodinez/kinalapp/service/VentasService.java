@@ -41,17 +41,14 @@ public class VentasService implements IVentasService {
     public Ventas guardar(Ventas venta) {
         validarVenta(venta);
 
-        // Si no se especifica fecha, usar la fecha actual
         if (venta.getFechaVenta() == null) {
             venta.setFechaVenta(LocalDate.now());
         }
 
-        // Si no se especifica estado, activar por defecto
         if (venta.getEstado() == null || venta.getEstado() == 0) {
             venta.setEstado(1);
         }
 
-        // Si no se especifica total, inicializar en 0 (luego se calcula con los detalles)
         if (venta.getTotal() == null) {
             venta.setTotal(0.0);
         }
@@ -108,7 +105,7 @@ public class VentasService implements IVentasService {
         Ventas venta = ventasRepository.findById(codigo)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
 
-        venta.setEstado(0); // Estado 0 = anulada/inactiva
+        venta.setEstado(0);
         return ventasRepository.save(venta);
     }
 
