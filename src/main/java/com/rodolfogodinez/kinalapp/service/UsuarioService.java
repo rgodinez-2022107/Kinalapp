@@ -31,7 +31,7 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Usuario> buscarPorCodigo(Integer codigo) {
+    public Optional<Usuario> buscarPorCodigo(Long codigo) {
         return usuarioRepository.findById(codigo);
     }
 
@@ -49,59 +49,40 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     public Usuario guardar(Usuario usuario) {
-        // Validar datos
         validarUsuario(usuario);
-
-        // Verificar que no exista otro usuario con el mismo username
         if (usuarioRepository.existsByUsername(usuario.getUsername())) {
             throw new IllegalArgumentException("El username ya está en uso");
         }
-
-        // Verificar que no exista otro usuario con el mismo email
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new IllegalArgumentException("El email ya está en uso");
         }
-
-        // Si no se especifica estado, activar por defecto
         if (usuario.getEstado() == null || usuario.getEstado() == 0) {
             usuario.setEstado(1);
         }
-
-        // En un proyecto real, aquí se encriptaría la contraseña
-        // usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-
         return usuarioRepository.save(usuario);
     }
 
     @Override
-    public Usuario actualizar(Integer codigo, Usuario usuario) {
+    public Usuario actualizar(Long codigo, Usuario usuario) {
         if (!usuarioRepository.existsById(codigo)) {
             throw new RuntimeException("Usuario no encontrado con código: " + codigo);
         }
-
-        // Obtener el usuario existente para verificar cambios en username/email
         Usuario usuarioExistente = usuarioRepository.findById(codigo).get();
-
-        // Si está cambiando el username, verificar que no esté en uso por otro usuario
         if (!usuarioExistente.getUsername().equals(usuario.getUsername()) &&
                 usuarioRepository.existsByUsername(usuario.getUsername())) {
             throw new IllegalArgumentException("El username ya está en uso");
         }
-
-        // Si está cambiando el email, verificar que no esté en uso por otro usuario
         if (!usuarioExistente.getEmail().equals(usuario.getEmail()) &&
                 usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new IllegalArgumentException("El email ya está en uso");
         }
-
         usuario.setCodigoUsuario(codigo);
         validarUsuario(usuario);
-
         return usuarioRepository.save(usuario);
     }
 
     @Override
-    public void eliminar(Integer codigo) {
+    public void eliminar(Long codigo) {
         if (!usuarioRepository.existsById(codigo)) {
             throw new RuntimeException("Usuario no encontrado con código: " + codigo);
         }
@@ -110,7 +91,7 @@ public class UsuarioService implements IUsuarioService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existePorCodigo(Integer codigo) {
+    public boolean existePorCodigo(Long codigo) {
         return usuarioRepository.existsById(codigo);
     }
 
@@ -136,20 +117,15 @@ public class UsuarioService implements IUsuarioService {
         if (usuario.getUsername() == null || usuario.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("El username es obligatorio");
         }
-
         if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("La contraseña es obligatoria");
         }
-
         if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("El email es obligatorio");
         }
-
         if (usuario.getRol() == null || usuario.getRol().trim().isEmpty()) {
             throw new IllegalArgumentException("El rol es obligatorio");
         }
-
-        // Validar formato de email básico
         if (!usuario.getEmail().contains("@")) {
             throw new IllegalArgumentException("El email no tiene un formato válido");
         }
