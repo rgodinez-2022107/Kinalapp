@@ -5,7 +5,6 @@ import com.rodolfogodinez.kinalapp.service.IVentasService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -29,7 +28,7 @@ public class VentasController {
     }
 
     @GetMapping("/{codigo}")
-    public ResponseEntity<Ventas> buscarPorCodigo(@PathVariable Integer codigo) {
+    public ResponseEntity<Ventas> buscarPorCodigo(@PathVariable Long codigo) {
         return ventasService.buscarPorCodigo(codigo)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -38,7 +37,6 @@ public class VentasController {
     @PostMapping
     public ResponseEntity<?> guardar(@RequestBody Ventas venta) {
         try {
-            System.out.println("Recibiendo venta: " + venta);
             Ventas nuevaVenta = ventasService.guardar(venta);
             return new ResponseEntity<>(nuevaVenta, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -47,7 +45,7 @@ public class VentasController {
     }
 
     @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer codigo, @RequestBody Ventas venta) {
+    public ResponseEntity<?> actualizar(@PathVariable Long codigo, @RequestBody Ventas venta) {
         try {
             if (!ventasService.existePorCodigo(codigo)) {
                 return ResponseEntity.notFound().build();
@@ -62,7 +60,7 @@ public class VentasController {
     }
 
     @PatchMapping("/{codigo}/anular")
-    public ResponseEntity<?> anularVenta(@PathVariable Integer codigo) {
+    public ResponseEntity<?> anularVenta(@PathVariable Long codigo) {
         try {
             Ventas ventaAnulada = ventasService.anularVenta(codigo);
             return ResponseEntity.ok(ventaAnulada);
@@ -72,7 +70,7 @@ public class VentasController {
     }
 
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer codigo) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long codigo) {
         try {
             if (!ventasService.existePorCodigo(codigo)) {
                 return ResponseEntity.notFound().build();
