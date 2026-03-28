@@ -1,6 +1,7 @@
 package com.rodolfogodinez.kinalapp.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "productos")
@@ -9,7 +10,7 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigo_producto")
-    private Integer codigoProducto;
+    private Long codigoProducto;
 
     @Column(name = "nombre_producto", length = 60, nullable = false)
     private String nombreProducto;
@@ -23,6 +24,8 @@ public class Producto {
     @Column(nullable = false)
     private Integer estado;
 
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DetalleVenta> detallesVenta;
 
     public Producto() {
     }
@@ -34,13 +37,11 @@ public class Producto {
         this.estado = estado;
     }
 
-    -
-
-    public Integer getCodigoProducto() {
+    public Long getCodigoProducto() {
         return codigoProducto;
     }
 
-    public void setCodigoProducto(Integer codigoProducto) {
+    public void setCodigoProducto(Long codigoProducto) {
         this.codigoProducto = codigoProducto;
     }
 
@@ -74,5 +75,13 @@ public class Producto {
 
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+
+    public List<DetalleVenta> getDetallesVenta() {
+        return detallesVenta;
+    }
+
+    public void setDetallesVenta(List<DetalleVenta> detallesVenta) {
+        this.detallesVenta = detallesVenta;
     }
 }

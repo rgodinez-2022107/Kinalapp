@@ -7,9 +7,9 @@ import jakarta.persistence.*;
 public class DetalleVenta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)//llave primario autoincremental
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigo_detalle_venta")
-    private Integer codigoDetalleVenta;
+    private Long codigoDetalleVenta;
 
     @Column(nullable = false)
     private Integer cantidad;
@@ -18,18 +18,17 @@ public class DetalleVenta {
     private Double precioUnitario;
 
     @Column(nullable = false)
-    private Double subtotal; // lo va a calcular como cantidad por precioUnitario
+    private Double subtotal;
 
-    @ManyToOne //muchos detalles pertenecen a una venta
-    @JoinColumn(name = "ventas_codigo_venta", referencedColumnName = "codigo_venta" =false)
+    @ManyToOne
+    @JoinColumn(name = "ventas_codigo_venta", referencedColumnName = "codigo_venta", nullable = false)
     private Ventas venta;
 
     @ManyToOne
-    @JoinColumn(name = "Productos_cadigo_producto", referencedColumnName = "codigo_producto", nullable = false)
+    @JoinColumn(name = "Productos_codigo_producto", referencedColumnName = "codigo_producto", nullable = false)
     private Producto producto;
 
     public DetalleVenta() {
-
     }
 
     public DetalleVenta(Integer cantidad, Double precioUnitario, Double subtotal, Ventas venta, Producto producto) {
@@ -40,12 +39,11 @@ public class DetalleVenta {
         this.producto = producto;
     }
 
-
-    public Integer getCodigoDetalleVenta() {
+    public Long getCodigoDetalleVenta() {
         return codigoDetalleVenta;
     }
 
-    public void setCodigoDetalleVenta(Integer codigoDetalleVenta) {
+    public void setCodigoDetalleVenta(Long codigoDetalleVenta) {
         this.codigoDetalleVenta = codigoDetalleVenta;
     }
 
@@ -55,7 +53,6 @@ public class DetalleVenta {
 
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
-        // this.subtotal = this.cantidad * this.precioUnitario;
     }
 
     public Double getPrecioUnitario() {
