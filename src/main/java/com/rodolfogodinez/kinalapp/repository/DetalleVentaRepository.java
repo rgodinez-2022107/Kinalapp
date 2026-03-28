@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DetalleVentaRepository extends JpaRepository<DetalleVenta,Integer> {
 
+    List<DetalleVenta> findByVenta_CodigoVenta(Integer codigoVenta);
 
 }
