@@ -1,39 +1,40 @@
 package com.rodolfogodinez.kinalapp.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "ventas")
 public class Ventas {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "codigo_venta")
-    private Integer codigoVenta;// lo puse asi para que sea un toincremental
-    @Column(name = "fecha_venta", nullable = false)// significa que n puede ser nullo
-    private LocalDate fechaVenta; // use localdate para la fecha
-    @Column(nullable = false)
-    private Double total;// "Double" para decimales
-    @Column(nullable = false)
-    private Integer estado; // para saver si el cliente esta activo o inactivo
+    private Long codigoVenta;
 
+    @Column(name = "fecha_venta", nullable = false)
+    private LocalDate fechaVenta;
 
-    @ManyToOne // porque muchas ventas pueden venir de un solo cliente.
+    @Column(nullable = false)
+    private Double total;
+
+    @Column(nullable = false)
+    private Integer estado;
+
+    @ManyToOne
     @JoinColumn(name = "clientes_dpi_cliente", referencedColumnName = "dpi_cliente", nullable = false)
-    private Cliente cliente; // Este es objeto Cliente relacionado
+    private Cliente cliente;
 
     @ManyToOne
     @JoinColumn(name = "usuarios_codigo_usuario", referencedColumnName = "codigo_usuario", nullable = false)
-    private Usuario usuario; // este es el objeto Usuario relacionado
+    private Usuario usuario;
 
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DetalleVenta> detalles;
 
     public Ventas() {
-
     }
-
-    // constructor con parametros pero sin codigoVenta porque ya lo puse como toincremental
 
     public Ventas(LocalDate fechaVenta, Double total, Integer estado, Cliente cliente, Usuario usuario) {
         this.fechaVenta = fechaVenta;
@@ -43,11 +44,11 @@ public class Ventas {
         this.usuario = usuario;
     }
 
-    public Integer getCodigoVenta() {
+    public Long getCodigoVenta() {
         return codigoVenta;
     }
 
-    public void setCodigoVenta(Integer codigoVenta) {
+    public void setCodigoVenta(Long codigoVenta) {
         this.codigoVenta = codigoVenta;
     }
 
@@ -90,5 +91,12 @@ public class Ventas {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-}
 
+    public List<DetalleVenta> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(List<DetalleVenta> detalles) {
+        this.detalles = detalles;
+    }
+}
