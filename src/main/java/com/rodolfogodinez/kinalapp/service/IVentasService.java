@@ -8,20 +8,19 @@ import java.util.Optional;
 
 public interface IVentasService {
 
-
     List<Ventas> listarTodos();
 
     List<Ventas> listarActivas();
 
-    Optional<Ventas> buscarPorCodigo(Integer codigo);
+    Optional<Ventas> buscarPorCodigo(Long codigo);
 
     Ventas guardar(Ventas venta);
 
-    Ventas actualizar(Integer codigo, Ventas venta);
+    Ventas actualizar(Long codigo, Ventas venta);
 
-    void eliminar(Integer codigo);
+    void eliminar(Long codigo);
 
-    boolean existePorCodigo(Integer codigo);
+    boolean existePorCodigo(Long codigo);
 
     List<Ventas> buscarPorCliente(Cliente cliente);
 
@@ -29,5 +28,5 @@ public interface IVentasService {
 
     List<Ventas> buscarPorRangoFechas(LocalDate inicio, LocalDate fin);
 
-    Ventas anularVenta(Integer codigo);
+    Ventas anularVenta(Long codigo);
 }

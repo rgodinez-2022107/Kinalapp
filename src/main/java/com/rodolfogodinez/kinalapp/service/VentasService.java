@@ -33,43 +33,37 @@ public class VentasService implements IVentasService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<Ventas> buscarPorCodigo(Integer codigo) {
+    public Optional<Ventas> buscarPorCodigo(Long codigo) {
         return ventasRepository.findById(codigo);
     }
 
     @Override
     public Ventas guardar(Ventas venta) {
         validarVenta(venta);
-
         if (venta.getFechaVenta() == null) {
             venta.setFechaVenta(LocalDate.now());
         }
-
         if (venta.getEstado() == null || venta.getEstado() == 0) {
             venta.setEstado(1);
         }
-
         if (venta.getTotal() == null) {
             venta.setTotal(0.0);
         }
-
         return ventasRepository.save(venta);
     }
 
     @Override
-    public Ventas actualizar(Integer codigo, Ventas venta) {
+    public Ventas actualizar(Long codigo, Ventas venta) {
         if (!ventasRepository.existsById(codigo)) {
             throw new RuntimeException("Venta no encontrada con código: " + codigo);
         }
-
         venta.setCodigoVenta(codigo);
         validarVenta(venta);
-
         return ventasRepository.save(venta);
     }
 
     @Override
-    public void eliminar(Integer codigo) {
+    public void eliminar(Long codigo) {
         if (!ventasRepository.existsById(codigo)) {
             throw new RuntimeException("Venta no encontrada con código: " + codigo);
         }
@@ -78,7 +72,7 @@ public class VentasService implements IVentasService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existePorCodigo(Integer codigo) {
+    public boolean existePorCodigo(Long codigo) {
         return ventasRepository.existsById(codigo);
     }
 
@@ -101,10 +95,9 @@ public class VentasService implements IVentasService {
     }
 
     @Override
-    public Ventas anularVenta(Integer codigo) {
+    public Ventas anularVenta(Long codigo) {
         Ventas venta = ventasRepository.findById(codigo)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
-
         venta.setEstado(0);
         return ventasRepository.save(venta);
     }
@@ -113,11 +106,9 @@ public class VentasService implements IVentasService {
         if (venta.getCliente() == null) {
             throw new IllegalArgumentException("El cliente es obligatorio");
         }
-
         if (venta.getUsuario() == null) {
             throw new IllegalArgumentException("El usuario que realiza la venta es obligatorio");
         }
-
         if (venta.getTotal() != null && venta.getTotal() < 0) {
             throw new IllegalArgumentException("El total no puede ser negativo");
         }
