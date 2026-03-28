@@ -65,7 +65,6 @@ Antes de ejecutar la aplicación, debe de tener instalado:
 
 ## Pruebas y Evidencias
 ## Evidencias de Pruebas
-
 ![Crear Cliente](screenshots/Captura%20de%20pantalla%202026-03-27%20224505.png)
 
 ![Listar Clientes](screenshots/Captura%20de%20pantalla%202026-03-27%20224515.png)
