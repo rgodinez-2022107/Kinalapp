@@ -5,7 +5,6 @@ import com.rodolfogodinez.kinalapp.service.IProductoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,26 +17,22 @@ public class ProductoController {
         this.productoService = productoService;
     }
 
-
     @GetMapping
     public ResponseEntity<List<Producto>> listar() {
         return ResponseEntity.ok(productoService.listarTodos());
     }
-
 
     @GetMapping("/activos")
     public ResponseEntity<List<Producto>> listarActivos() {
         return ResponseEntity.ok(productoService.listarActivos());
     }
 
-
     @GetMapping("/{codigo}")
-    public ResponseEntity<Producto> buscarPorCodigo(@PathVariable Integer codigo) {
+    public ResponseEntity<Producto> buscarPorCodigo(@PathVariable Long codigo) {
         return productoService.buscarPorCodigo(codigo)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
 
     @PostMapping
     public ResponseEntity<?> guardar(@RequestBody Producto producto) {
@@ -49,9 +44,8 @@ public class ProductoController {
         }
     }
 
-
     @PutMapping("/{codigo}")
-    public ResponseEntity<?> actualizar(@PathVariable Integer codigo, @RequestBody Producto producto) {
+    public ResponseEntity<?> actualizar(@PathVariable Long codigo, @RequestBody Producto producto) {
         try {
             if (!productoService.existePorCodigo(codigo)) {
                 return ResponseEntity.notFound().build();
@@ -65,9 +59,8 @@ public class ProductoController {
         }
     }
 
-
     @DeleteMapping("/{codigo}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer codigo) {
+    public ResponseEntity<Void> eliminar(@PathVariable Long codigo) {
         try {
             if (!productoService.existePorCodigo(codigo)) {
                 return ResponseEntity.notFound().build();
