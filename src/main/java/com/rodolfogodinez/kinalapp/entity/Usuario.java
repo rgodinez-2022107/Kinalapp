@@ -1,6 +1,7 @@
 package com.rodolfogodinez.kinalapp.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -9,24 +10,25 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "codigo_usuario")
-    private Integer codigoUsuario;
+    private Long codigoUsuario;
 
     @Column(length = 45, nullable = false, unique = true)
-    // unique = true para que no haya dos usuarios con el mismo username
     private String username;
 
     @Column(length = 45, nullable = false)
     private String password;
 
-    @Column(length = 60, nullable = false, unique = true) // El email también debe ser único
+    @Column(length = 60, nullable = false, unique = true)
     private String email;
 
     @Column(length = 45, nullable = false)
-    private String rol; // admin, venddor
+    private String rol;
 
     @Column(nullable = false)
     private Integer estado;
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Ventas> ventas;
 
     public Usuario() {
     }
@@ -39,12 +41,11 @@ public class Usuario {
         this.estado = estado;
     }
 
-
-    public Integer getCodigoUsuario() {
+    public Long getCodigoUsuario() {
         return codigoUsuario;
     }
 
-    public void setCodigoUsuario(Integer codigoUsuario) {
+    public void setCodigoUsuario(Long codigoUsuario) {
         this.codigoUsuario = codigoUsuario;
     }
 
@@ -86,5 +87,13 @@ public class Usuario {
 
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+
+    public List<Ventas> getVentas() {
+        return ventas;
+    }
+
+    public void setVentas(List<Ventas> ventas) {
+        this.ventas = ventas;
     }
 }
