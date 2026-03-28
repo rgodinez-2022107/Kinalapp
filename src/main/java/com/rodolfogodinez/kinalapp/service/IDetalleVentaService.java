@@ -9,19 +9,19 @@ public interface IDetalleVentaService {
 
     List<DetalleVenta> listarTodos();
 
-    Optional<DetalleVenta> buscarPorCodigo(Integer codigo);
+    Optional<DetalleVenta> buscarPorCodigo(Long codigo);
 
     DetalleVenta guardar(DetalleVenta detalle);
 
-    DetalleVenta actualizar(Integer codigo, DetalleVenta detalle);
+    DetalleVenta actualizar(Long codigo, DetalleVenta detalle);
 
-    void eliminar(Integer codigo);
+    void eliminar(Long codigo);
 
-    boolean existePorCodigo(Integer codigo);
+    boolean existePorCodigo(Long codigo);
 
     List<DetalleVenta> buscarPorVenta(Ventas venta);
 
-    Double recalcularTotalVenta(Integer codigoVenta);
+    List<DetalleVenta> buscarPorVentaId(Long codigoVenta);
 
-    List<DetalleVenta> buscarPorVenta(Integer codigoVenta);
+    Double recalcularTotalVenta(Long codigoVenta);
 }

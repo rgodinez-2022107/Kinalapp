@@ -33,90 +33,64 @@ public class DetalleVentaService implements IDetalleVentaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<DetalleVenta> buscarPorCodigo(Integer codigo) {
+    public Optional<DetalleVenta> buscarPorCodigo(Long codigo) {
         return detalleVentaRepository.findById(codigo);
     }
 
     @Override
     public DetalleVenta guardar(DetalleVenta detalle) {
-
         validarDetalle(detalle);
-
         if (detalle.getVenta() == null || detalle.getVenta().getCodigoVenta() == null) {
             throw new IllegalArgumentException("La venta es obligatoria");
         }
-
         if (!ventasRepository.existsById(detalle.getVenta().getCodigoVenta())) {
             throw new RuntimeException("La venta no existe");
         }
-
         if (detalle.getProducto() == null || detalle.getProducto().getCodigoProducto() == null) {
             throw new IllegalArgumentException("El producto es obligatorio");
         }
-
         Double subtotal = detalle.getCantidad() * detalle.getPrecioUnitario();
         detalle.setSubtotal(subtotal);
-
         DetalleVenta detalleGuardado = detalleVentaRepository.save(detalle);
-
         recalcularTotalVenta(detalle.getVenta().getCodigoVenta());
-
         productoService.actualizarStock(detalle.getProducto().getCodigoProducto(), detalle.getCantidad());
-
         return detalleGuardado;
     }
 
     @Override
-    public DetalleVenta actualizar(Integer codigo, DetalleVenta detalle) {
-
+    public DetalleVenta actualizar(Long codigo, DetalleVenta detalle) {
         if (!detalleVentaRepository.existsById(codigo)) {
             throw new RuntimeException("Detalle no encontrado con código: " + codigo);
         }
-
         DetalleVenta detalleOriginal = detalleVentaRepository.findById(codigo).get();
-
         detalle.setCodigoDetalleVenta(codigo);
-
         validarDetalle(detalle);
-
         Double nuevoSubtotal = detalle.getCantidad() * detalle.getPrecioUnitario();
         detalle.setSubtotal(nuevoSubtotal);
-
         DetalleVenta detalleActualizado = detalleVentaRepository.save(detalle);
-
-
         recalcularTotalVenta(detalle.getVenta().getCodigoVenta());
-
-
         Integer diferenciaCantidad = detalle.getCantidad() - detalleOriginal.getCantidad();
         if (diferenciaCantidad != 0) {
-
-            productoService.actualizarStock(detalle.getProducto().getCodigoProducto(), -diferenciaCantidad);
+            productoService.actualizarStock(detalle.getProducto().getCodigoProducto(), diferenciaCantidad);
         }
-
         return detalleActualizado;
     }
 
     @Override
-    public void eliminar(Integer codigo) {
-
+    public void eliminar(Long codigo) {
         DetalleVenta detalle = detalleVentaRepository.findById(codigo)
                 .orElseThrow(() -> new RuntimeException("Detalle no encontrado con código: " + codigo));
-
-        Integer codigoVenta = detalle.getVenta().getCodigoVenta();
-        Integer codigoProducto = detalle.getProducto().getCodigoProducto();
+        Long codigoVenta = detalle.getVenta().getCodigoVenta();
+        Long codigoProducto = detalle.getProducto().getCodigoProducto();
         Integer cantidadDevuelta = detalle.getCantidad();
-
         detalleVentaRepository.deleteById(codigo);
-
         recalcularTotalVenta(codigoVenta);
-
         productoService.actualizarStock(codigoProducto, -cantidadDevuelta);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existePorCodigo(Integer codigo) {
+    public boolean existePorCodigo(Long codigo) {
         return detalleVentaRepository.existsById(codigo);
     }
 
@@ -126,28 +100,25 @@ public class DetalleVentaService implements IDetalleVentaService {
         if (venta == null || venta.getCodigoVenta() == null) {
             throw new IllegalArgumentException("La venta es obligatoria");
         }
-
-        return detalleVentaRepository.findAll().stream()
-                .filter(d -> d.getVenta() != null &&
-                        d.getVenta().getCodigoVenta().equals(venta.getCodigoVenta()))
-                .toList();
+        return detalleVentaRepository.findByVenta(venta);
     }
 
     @Override
-    public Double recalcularTotalVenta(Integer codigoVenta) {
+    @Transactional(readOnly = true)
+    public List<DetalleVenta> buscarPorVentaId(Long codigoVenta) {
+        return detalleVentaRepository.findByVenta_CodigoVenta(codigoVenta);
+    }
 
+    @Override
+    public Double recalcularTotalVenta(Long codigoVenta) {
         Ventas venta = ventasRepository.findById(codigoVenta)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con código: " + codigoVenta));
-
-        List<DetalleVenta> detalles = buscarPorVenta(venta);
-
+        List<DetalleVenta> detalles = buscarPorVentaId(codigoVenta);
         Double nuevoTotal = detalles.stream()
                 .mapToDouble(DetalleVenta::getSubtotal)
                 .sum();
-
         venta.setTotal(nuevoTotal);
         ventasRepository.save(venta);
-
         return nuevoTotal;
     }
 
@@ -155,26 +126,14 @@ public class DetalleVentaService implements IDetalleVentaService {
         if (detalle.getCantidad() == null || detalle.getCantidad() <= 0) {
             throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
         }
-
         if (detalle.getPrecioUnitario() == null || detalle.getPrecioUnitario() <= 0) {
             throw new IllegalArgumentException("El precio unitario debe ser mayor a 0");
         }
-
         if (detalle.getProducto() == null) {
             throw new IllegalArgumentException("El producto es obligatorio");
         }
-
         if (detalle.getVenta() == null) {
             throw new IllegalArgumentException("La venta es obligatoria");
         }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<DetalleVenta> buscarPorVenta(Integer codigoVenta) {
-        if (codigoVenta == null) {
-            throw new IllegalArgumentException("El código de venta es obligatorio");
-        }
-        return detalleVentaRepository.findByVenta_CodigoVenta(codigoVenta);
     }
 }
