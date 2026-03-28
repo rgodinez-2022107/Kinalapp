@@ -64,12 +64,20 @@ Antes de ejecutar la aplicación, debe de tener instalado:
 20.Verificar venta: GET a http://localhost:9000/ventas/1
 
 ## Pruebas y Evidencias
-![Captura de pantalla 2026-03-27 224644.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224644.png)
-![Captura de pantalla 2026-03-27 224505.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224505.png)
-![Captura de pantalla 2026-03-27 224515.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224515.png)
-![Captura de pantalla 2026-03-27 224531.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224531.png)
-![Captura de pantalla 2026-03-27 224544.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224544.png)
-![Captura de pantalla 2026-03-27 224601.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224601.png)
-![Captura de pantalla 2026-03-27 224616.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224616.png)
-![Captura de pantalla 2026-03-27 224627.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224627.png)
-![Captura de pantalla 2026-03-27 224637.png](../../../../../../kinalapp/screenshots/Captura%20de%20pantalla%202026-03-27%20224637.png)
+## Evidencias de Pruebas
+
+![Crear Cliente](screenshots/Captura%20de%20pantalla%202026-03-27%20224505.png)
+
+![Listar Clientes](screenshots/Captura%20de%20pantalla%202026-03-27%20224515.png)
+
+![Crear Producto](screenshots/Captura%20de%20pantalla%202026-03-27%20224531.png)
+
+![Crear Usuario](screenshots/Captura%20de%20pantalla%202026-03-27%20224544.png)
+
+![Crear Venta](screenshots/Captura%20de%20pantalla%202026-03-27%20224601.png)
+
+![Agregar Detalle](screenshots/Captura%20de%20pantalla%202026-03-27%20224616.png)
+
+![Stock Actualizado](screenshots/Captura%20de%20pantalla%202026-03-27%20224627.png)
+
+![Total Venta](screenshots/Captura%20de%20pantalla%202026-03-27%20224637.png)
