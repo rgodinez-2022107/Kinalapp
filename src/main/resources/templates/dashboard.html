@@ -393,8 +393,9 @@
 
 <nav class="navbar">
     <div class="logo">
-        <i class="fas fa-cubes"></i>
-        <span>Kinal<span style="color:#3B82F6;">App</span></span>
+        <img th:src="@{/images/logo.png}" alt="KinalApp Logo" style="width: 60px; height: 60px; margin-bottom: 1rem;">
+        <h3>KinalApp</h3>
+        <p>Sistema de Gestión Integral</p>
     </div>
     <div class="nav-links">
         <a href="?seccion=clientes" class="nav-link" th:classappend="${seccionActual == 'clientes'} ? 'active' : ''">
