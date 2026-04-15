@@ -1,7 +1,7 @@
 # KinalApp - Sistema de Gestión de Ventas
 
 ## Descripción
-
+ 
 Kinalapp es un sistema de gestión de ventas diseñado para pequeños y medianos negocios. Permite administrar clientes, productos, usuarios y registrar ventas de manera sencilla y eficiente.
 
 ## Funcionalidades
