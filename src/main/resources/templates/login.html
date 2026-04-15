@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KinalApp - Iniciar Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #0B1120 0%, #0F172A 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .login-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 2.5rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo i {
+            font-size: 3.5rem;
+            color: #3B82F6;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFFFFF, #94A3B8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-top: 0.5rem;
+        }
+
+        .logo p {
+            color: #94A3B8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 0.8rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #94A3B8;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn i {
+            font-size: 1.1rem;
+        }
+
+        .tab-btn.active {
+            color: #3B82F6;
+            border-bottom: 2px solid #3B82F6;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #CBD5E1;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #CBD5E1;
+            font-size: 0.9rem;
+        }
+
+        label i {
+            margin-right: 8px;
+            color: #3B82F6;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: #0F172A;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            color: #F1F5F9;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-login, .btn-register {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(95deg, #2563EB, #3B82F6);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover, .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .alert {
+            padding: 0.85rem 1rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #EF4444;
+            color: #FCA5A5;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10B981;
+            color: #34D399;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #64748B;
+            font-size: 0.8rem;
+        }
+
+        .password-requirements {
+            font-size: 0.75rem;
+            color: #64748B;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <div class="logo">
+            <i class="fas fa-cubes"></i>
+            <h1>KinalApp</h1>
+            <p>Sistema de Gestión Integral</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+            </button>
+            <button class="tab-btn" onclick="switchTab('register')">
+                <i class="fas fa-user-plus"></i> Crear Cuenta
+            </button>
+        </div>
+
+        <!-- Mensajes de error/éxito -->
+        <div th:if="${error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}">Error</span>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}">Éxito</span>
+        </div>
+
+        <!-- Formulario de Login -->
+        <div id="loginTab" class="tab-content active">
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Usuario</label>
+                    <input type="text" name="username" placeholder="Ingresa tu usuario" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Contraseña</label>
+                    <input type="password" name="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+        </div>
+
+        <!-- Formulario de Registro -->
+        <div id="registerTab" class="tab-content">
+            <form th:action="@{/registro}" method="post">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Usuario *</label>
+                    <input type="text" name="username" placeholder="Elige un nombre de usuario" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Correo Electrónico *</label>
+                    <input type="email" name="email" placeholder="tu@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Contraseña *</label>
+                    <input type="password" name="password" id="password" placeholder="Crea una contraseña" required>
+                    <div class="password-requirements">
+                        <i class="fas fa-info-circle"></i> Mínimo 6 caracteres
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Confirmar Contraseña *</label>
+                    <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Repite tu contraseña" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-user-tag"></i> Rol</label>
+                    <select name="rol">
+                        <option value="USER">Usuario Normal</option>
+                        <option value="ADMIN">Administrador</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-register">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                </button>
+            </form>
+        </div>
+
+        <div class="footer">
+            <i class="fas fa-shield-alt"></i> Sistema Seguro
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tab) {
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        if (tab === 'login') {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            tabs[0].classList.add('active');
+            tabs[1].classList.remove('active');
+        } else {
+            loginTab.classList.remove('active');
+            registerTab.classList.add('active');
+            tabs[0].classList.remove('active');
+            tabs[1].classList.add('active');
+        }
+    }
+
+    // Validar que las contraseñas coincidan antes de enviar
+    document.querySelector('#registerTab form').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Las contraseñas no coinciden');
+            return false;
+        }
+
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('La contraseña debe tener al menos 6 caracteres');
+            return false;
+        }
+    });
+</script>
+</body>
+</html>
