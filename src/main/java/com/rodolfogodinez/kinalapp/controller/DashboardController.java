@@ -5,13 +5,14 @@ import com.rodolfogodinez.kinalapp.entity.Producto;
 import com.rodolfogodinez.kinalapp.entity.Ventas;
 import com.rodolfogodinez.kinalapp.service.IClienteService;
 import com.rodolfogodinez.kinalapp.service.IProductoService;
+import com.rodolfogodinez.kinalapp.service.IUsuarioService;
 import com.rodolfogodinez.kinalapp.service.IVentasService;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.List;
 
 @Controller
@@ -20,53 +21,53 @@ public class DashboardController {
     private final IClienteService clienteService;
     private final IProductoService productoService;
     private final IVentasService ventasService;
+    private final IUsuarioService usuarioService;
 
     public DashboardController(IClienteService clienteService,
                                IProductoService productoService,
-                               IVentasService ventasService) {
+                               IVentasService ventasService,
+                               IUsuarioService usuarioService) {
         this.clienteService = clienteService;
         this.productoService = productoService;
         this.ventasService = ventasService;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/")
     public String dashboard(@RequestParam(value = "seccion", defaultValue = "clientes") String seccion,
                             Model model,
-                            HttpSession session) {
-
-        // Verificar si hay usuario en sesión
-        if (session.getAttribute("usuario") == null) {
-            return "redirect:/login";
-        }
-
+                            @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("seccionActual", seccion);
 
-        // Siempre cargar clientes y productos para el formulario de ventas
+        if (userDetails != null) {
+            usuarioService.buscarPorUsername(userDetails.getUsername()).ifPresent(u ->
+                    model.addAttribute("codigoUsuarioActual", u.getCodigoUsuario())
+            );
+        }
+
         List<Cliente> clientes = clienteService.listarTodos();
         List<Producto> productos = productoService.listarTodos();
+        List<Ventas> ventas = ventasService.listarTodos();
+
         model.addAttribute("listaClientes", clientes);
         model.addAttribute("listaProductos", productos);
+        model.addAttribute("listaVentas", ventas);
 
         if (seccion.equals("clientes")) {
             model.addAttribute("tituloTabla", "Clientes Registrados");
-            model.addAttribute("tituloFormulario", "Gestión de Clientes");
+            model.addAttribute("tituloFormulario", "Gestion de Clientes");
             model.addAttribute("clienteForm", new Cliente());
         } else if (seccion.equals("productos")) {
-            model.addAttribute("tituloTabla", "Productos en Catálogo");
-            model.addAttribute("tituloFormulario", "Gestión de Productos");
+            model.addAttribute("tituloTabla", "Productos en Catalogo");
+            model.addAttribute("tituloFormulario", "Gestion de Productos");
             model.addAttribute("productoForm", new Producto());
         } else if (seccion.equals("ventas")) {
             model.addAttribute("tituloTabla", "Historial de Ventas");
             model.addAttribute("tituloFormulario", "Nueva Venta");
         }
 
-        List<Ventas> ventas = ventasService.listarTodos();
-        model.addAttribute("listaVentas", ventas);
-
         return "dashboard";
     }
-
-
 
     @PostMapping("/guardarCliente")
     public String guardarCliente(@ModelAttribute Cliente cliente,
@@ -103,17 +104,17 @@ public class DashboardController {
 
     @GetMapping("/clientes/editar")
     public String editarCliente(@RequestParam String dpi, RedirectAttributes redirectAttributes) {
-        clienteService.buscarPorDPI(dpi).ifPresent(cliente -> {
-            redirectAttributes.addFlashAttribute("clienteForm", cliente);
-        });
+        clienteService.buscarPorDPI(dpi).ifPresent(cliente ->
+                redirectAttributes.addFlashAttribute("clienteForm", cliente)
+        );
         return "redirect:/?seccion=clientes";
     }
 
     @GetMapping("/productos/editar")
     public String editarProducto(@RequestParam Long codigo, RedirectAttributes redirectAttributes) {
-        productoService.buscarPorCodigo(codigo).ifPresent(producto -> {
-            redirectAttributes.addFlashAttribute("productoForm", producto);
-        });
+        productoService.buscarPorCodigo(codigo).ifPresent(producto ->
+                redirectAttributes.addFlashAttribute("productoForm", producto)
+        );
         return "redirect:/?seccion=productos";
     }
 }
