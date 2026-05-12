@@ -2,7 +2,6 @@ package com.rodolfogodinez.kinalapp.controller;
 
 import com.rodolfogodinez.kinalapp.entity.Usuario;
 import com.rodolfogodinez.kinalapp.service.IUsuarioService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,44 +18,16 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String mostrarLogin() {
-        return "login";
-    }
-
-    @PostMapping("/login")
-    public String procesarLogin(@RequestParam String username,
-                                @RequestParam String password,
-                                HttpSession session,
-                                Model model) {
-
-        try {
-            // Buscar usuario por username
-            Usuario usuario = usuarioService.buscarPorUsername(username)
-                    .orElse(null);
-
-            // Validar credenciales
-            if (usuario != null && usuario.getPassword().equals(password)) {
-
-                // Verificar si el usuario está activo
-                if (usuario.getEstado() == 0) {
-                    model.addAttribute("error", "Usuario inactivo. Contacte al administrador.");
-                    return "login";
-                }
-
-                // Guardar usuario en sesión
-                session.setAttribute("usuario", usuario);
-                session.setAttribute("nombreUsuario", usuario.getUsername());
-                session.setAttribute("rol", usuario.getRol());
-
-                return "redirect:/";
-            } else {
-                model.addAttribute("error", "Usuario o contraseña incorrectos");
-                return "login";
-            }
-        } catch (Exception e) {
-            model.addAttribute("error", "Error al iniciar sesión: " + e.getMessage());
-            return "login";
+    public String mostrarLogin(@RequestParam(value = "error", required = false) String error,
+                               @RequestParam(value = "logout", required = false) String logout,
+                               Model model) {
+        if (error != null) {
+            model.addAttribute("error", "Usuario o contrasena incorrectos, o usuario inactivo.");
         }
+        if (logout != null) {
+            model.addAttribute("success", "Has cerrado sesion exitosamente.");
+        }
+        return "login";
     }
 
     @PostMapping("/registro")
@@ -64,57 +35,48 @@ public class LoginController {
                                    @RequestParam String email,
                                    @RequestParam String password,
                                    @RequestParam String confirmPassword,
-                                   @RequestParam(defaultValue = "USER") String rol,
                                    Model model) {
-
         try {
-            // Validar que las contraseñas coincidan
             if (!password.equals(confirmPassword)) {
-                model.addAttribute("error", "Las contraseñas no coinciden");
+                model.addAttribute("error", "Las contrasenas no coinciden");
+                model.addAttribute("showRegister", true);
                 return "login";
             }
 
-            // Validar longitud de contraseña
             if (password.length() < 6) {
-                model.addAttribute("error", "La contraseña debe tener al menos 6 caracteres");
+                model.addAttribute("error", "La contrasena debe tener al menos 6 caracteres");
+                model.addAttribute("showRegister", true);
                 return "login";
             }
 
-            // Verificar si el usuario ya existe
             if (usuarioService.existeUsername(username)) {
-                model.addAttribute("error", "El nombre de usuario ya está en uso");
+                model.addAttribute("error", "El nombre de usuario ya esta en uso");
+                model.addAttribute("showRegister", true);
                 return "login";
             }
 
-            // Verificar si el email ya existe
             if (usuarioService.existeEmail(email)) {
-                model.addAttribute("error", "El correo electrónico ya está registrado");
+                model.addAttribute("error", "El correo electronico ya esta registrado");
+                model.addAttribute("showRegister", true);
                 return "login";
             }
 
-            // Crear nuevo usuario
             Usuario nuevoUsuario = new Usuario();
             nuevoUsuario.setUsername(username);
             nuevoUsuario.setEmail(email);
             nuevoUsuario.setPassword(password);
-            nuevoUsuario.setRol(rol);
-            nuevoUsuario.setEstado(1); // Activo por defecto
+            nuevoUsuario.setRol("USER");
+            nuevoUsuario.setEstado(1);
 
             usuarioService.guardar(nuevoUsuario);
 
-            model.addAttribute("success", "¡Cuenta creada exitosamente! Ahora puedes iniciar sesión.");
+            model.addAttribute("success", "Cuenta creada exitosamente. Ahora puedes iniciar sesion.");
             return "login";
 
         } catch (Exception e) {
             model.addAttribute("error", "Error al crear la cuenta: " + e.getMessage());
+            model.addAttribute("showRegister", true);
             return "login";
         }
-    }
-
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
     }
 }

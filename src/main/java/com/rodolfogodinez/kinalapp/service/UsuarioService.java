@@ -2,6 +2,7 @@ package com.rodolfogodinez.kinalapp.service;
 
 import com.rodolfogodinez.kinalapp.entity.Usuario;
 import com.rodolfogodinez.kinalapp.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.Optional;
 public class UsuarioService implements IUsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -51,40 +54,50 @@ public class UsuarioService implements IUsuarioService {
     public Usuario guardar(Usuario usuario) {
         validarUsuario(usuario);
         if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-            throw new IllegalArgumentException("El username ya está en uso");
+            throw new IllegalArgumentException("El username ya esta en uso");
         }
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new IllegalArgumentException("El email ya está en uso");
+            throw new IllegalArgumentException("El email ya esta en uso");
         }
         if (usuario.getEstado() == null || usuario.getEstado() == 0) {
             usuario.setEstado(1);
         }
+        if (usuario.getRol() == null || usuario.getRol().isBlank()) {
+            usuario.setRol("USER");
+        }
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public Usuario actualizar(Long codigo, Usuario usuario) {
         if (!usuarioRepository.existsById(codigo)) {
-            throw new RuntimeException("Usuario no encontrado con código: " + codigo);
+            throw new RuntimeException("Usuario no encontrado con codigo: " + codigo);
         }
         Usuario usuarioExistente = usuarioRepository.findById(codigo).get();
         if (!usuarioExistente.getUsername().equals(usuario.getUsername()) &&
                 usuarioRepository.existsByUsername(usuario.getUsername())) {
-            throw new IllegalArgumentException("El username ya está en uso");
+            throw new IllegalArgumentException("El username ya esta en uso");
         }
         if (!usuarioExistente.getEmail().equals(usuario.getEmail()) &&
                 usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new IllegalArgumentException("El email ya está en uso");
+            throw new IllegalArgumentException("El email ya esta en uso");
         }
         usuario.setCodigoUsuario(codigo);
         validarUsuario(usuario);
+        if (usuario.getRol() == null || usuario.getRol().isBlank()) {
+            usuario.setRol("USER");
+        }
+        if (!usuario.getPassword().startsWith("$2a$") && !usuario.getPassword().startsWith("$2b$")) {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         return usuarioRepository.save(usuario);
     }
 
     @Override
     public void eliminar(Long codigo) {
         if (!usuarioRepository.existsById(codigo)) {
-            throw new RuntimeException("Usuario no encontrado con código: " + codigo);
+            throw new RuntimeException("Usuario no encontrado con codigo: " + codigo);
         }
         usuarioRepository.deleteById(codigo);
     }
@@ -118,16 +131,13 @@ public class UsuarioService implements IUsuarioService {
             throw new IllegalArgumentException("El username es obligatorio");
         }
         if (usuario.getPassword() == null || usuario.getPassword().trim().isEmpty()) {
-            throw new IllegalArgumentException("La contraseña es obligatoria");
+            throw new IllegalArgumentException("La contrasena es obligatoria");
         }
         if (usuario.getEmail() == null || usuario.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("El email es obligatorio");
         }
-        if (usuario.getRol() == null || usuario.getRol().trim().isEmpty()) {
-            throw new IllegalArgumentException("El rol es obligatorio");
-        }
         if (!usuario.getEmail().contains("@")) {
-            throw new IllegalArgumentException("El email no tiene un formato válido");
+            throw new IllegalArgumentException("El email no tiene un formato valido");
         }
     }
 }

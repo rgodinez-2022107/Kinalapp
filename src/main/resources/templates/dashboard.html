@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="codigoUsuario" th:content="${codigoUsuarioActual}"/>
     <title>KinalApp | Dashboard Moderno</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -411,13 +414,17 @@
     <div class="user-info">
         <span class="badge badge-active">
             <i class="fas fa-user"></i>
-            <span th:text="${session.nombreUsuario}">Usuario</span>
+            <span th:text="${#authentication.name}">Usuario</span>
         </span>
-        <span class="badge" th:classappend="${session.rol == 'ADMIN'} ? 'badge-active' : 'badge-inactive'">
+        <span class="badge badge-active" sec:authorize="hasRole('ADMIN')">
             <i class="fas fa-tag"></i>
-            <span th:text="${session.rol}">ROL</span>
+            ADMIN
         </span>
-        <a href="/logout" class="nav-link" style="color: #F87171;">
+        <span class="badge badge-inactive" sec:authorize="!hasRole('ADMIN')">
+            <i class="fas fa-tag"></i>
+            USER
+        </span>
+        <a th:href="@{/logout}" class="nav-link" style="color: #F87171;">
             <i class="fas fa-sign-out-alt"></i> Salir
         </a>
     </div>
@@ -852,13 +859,17 @@
 
         showLoading();
 
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        const codigoUsuario = document.querySelector('meta[name="codigoUsuario"]').getAttribute('content');
+
         try {
             const ventaResponse = await fetch('/ventas', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', [csrfHeader]: csrfToken },
                 body: JSON.stringify({
                     cliente: { DPICliente: clienteId },
-                    usuario: { codigoUsuario: 1 },
+                    usuario: { codigoUsuario: parseInt(codigoUsuario) },
                     total: total,
                     fechaVenta: new Date().toISOString().split('T')[0],
                     estado: 1
@@ -885,7 +896,8 @@
                 alert('Venta guardada exitosamente');
                 window.location.reload();
             } else {
-                alert('Error al guardar la venta');
+                const errorMsg = await ventaResponse.text();
+                alert('Error al guardar la venta: ' + errorMsg);
             }
         } catch (error) {
             alert('Error de conexión');
@@ -925,7 +937,12 @@
         if(confirm('¿Anular esta venta?')) {
             showLoading();
             try {
-                const response = await fetch('/ventas/' + codigo + '/anular', { method: 'PATCH' });
+                const csrfT = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfH = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                const response = await fetch('/ventas/' + codigo + '/anular', {
+                    method: 'PATCH',
+                    headers: { [csrfH]: csrfT }
+                });
                 if(response.ok) {
                     alert('Venta anulada');
                     window.location.reload();
